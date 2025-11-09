@@ -2,7 +2,7 @@ import {Request, Response} from 'express'
 import bcrypt from 'bcryptjs'
 import { IUser, Role, Status, User } from '../models/user.model'
 import { signAccessToken } from '../utils/tokens'
-import { AuthRequest } from "../middlewares/auth.middlewares";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
 // /api/v1/auth/register
 export const register = async(req: Request, res: Response) => {
@@ -43,7 +43,7 @@ export const register = async(req: Request, res: Response) => {
 
     res.status(201).json({
       message:
-        role === role.AUTHOR
+        role === Role.AUTHOR
           ? "Author registered successfully. waiting for approvel"
           : "User registered successfully",
       data: {

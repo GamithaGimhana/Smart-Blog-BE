@@ -14,23 +14,26 @@ const app = express()
 app.use(express.json())                         
 
 // CORS middleware configuration
-app.use(cors({
-    origin: 'http://localhost:5173',            
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],  
-}))              
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  })
+)
 
 // Mount auth routes, mekath middleware ekak
 app.use('/api/v1/auth', authRoutes)     
 
-mongoose.connect(MONGO_URI)
+mongoose
+  .connect(MONGO_URI)
   .then(() => {
     console.log("Connected to MongoDB")
   })
   .catch((err) => {
-    console.error("Error connecting to MongoDB:", err)
+    console.error(`DB connection fail: ${err}`)
     process.exit(1)
   })
 
 app.listen(SERVER_PORT, () => {
-  console.log('Server is running')
+  console.log(`Server is running on ${SERVER_PORT}`)
 })

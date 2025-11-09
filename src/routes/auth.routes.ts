@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import { register, login, getMe, registerAdmin } from '../controllers/auth.controller'
-import { authenticate } from '../middlewares/auth.middlewares'
-import { isAdmin } from '../middlewares/isAdmin.middleware'
+import { authenticate } from '../middlewares/auth.middleware'
+import { requireRole } from "../middlewares/role.middleware"
+import { Role } from "../models/user.model"
 
 const router = Router()
 
@@ -19,6 +20,8 @@ router.get('/me', authenticate, getMe)
 
 // /api/v1/auth/admin/register
 // protected route (ADMIN)
-router.post('/admin/register', authenticate, isAdmin, registerAdmin)
+router.post('/admin/register', authenticate, requireRole([Role.ADMIN]), registerAdmin)
+
+// Refresh token end point
 
 export default router
