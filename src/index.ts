@@ -8,6 +8,9 @@ dotenv.config()
 
 const SERVER_PORT = process.env.SERVER_PORT
 const MONGO_URI = process.env.MONGO_URI as string
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME as string
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY as string
+const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET as string
 
 const app = express()
 
