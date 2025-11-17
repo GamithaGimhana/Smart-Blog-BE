@@ -2,12 +2,12 @@ import {Request, Response} from 'express'
 import bcrypt from 'bcryptjs'
 import { IUser, Role, Status, User } from '../models/user.model'
 import { signAccessToken, signRefreshToken } from '../utils/tokens'
-import { AuthRequest } from "../middlewares/auth.middleware";
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-dotenv.config();
+import { AuthRequest } from "../middlewares/auth.middleware"
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string
 
 // /api/v1/auth/register
 export const register = async(req: Request, res: Response) => {
@@ -80,14 +80,17 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid credentials" })
     }
 
+    // generate tokens
     const accessToken = signAccessToken(existingUser)
+    const refreshToken = signRefreshToken(existingUser)
 
     res.status(200).json({
       message: "success",
       data: {
         email: existingUser.email,
         roles: existingUser.roles,
-        accessToken
+        accessToken,
+        refreshToken
       }
     })
   } catch (err: any) {
@@ -163,31 +166,22 @@ export const registerAdmin = async (req: Request, res: Response) => {
   }
 }
 
-export const refreshToken = async (req: Request, res: Response) => {
-  const token = req.cookies.refreshToken;
-
-  if (!token) {
-    return res.status(401).json({ message: 'No refresh token found.!' });
-  }
-
-  try {
-    const payload: any = jwt.verify(token, JWT_REFRESH_SECRET);
-
-    const userId = payload.sub;
-
-    const existingUser = await User.findById(userId);
-
-    if (!existingUser) {
-      return res.status(401).json({
-        message: 'Invalid or expired refresh token.!',
-        existingUser: existingUser,
-      });
+export const handleRefreshToken = async (req: Request, res: Response) => {
+  try{
+    const { token } = req.body
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' })
     }
-    const newAccessToken = signAccessToken(existingUser);
-    res.json({ accessToken: newAccessToken });
+    const payload = jwt.verify(token, JWT_REFRESH_SECRET)
+    // payload.sub - user id
+
+    const user = await User.findById(payload.sub)
+    if (!user) {
+      return res.status(403).json({ message: 'Invalid or expired refresh token' })
+    }
+    const accessToken = signAccessToken(user)
+    res.status(200).json({ accessToken })
   } catch (err) {
-    return res
-      .status(403)
-      .json({ message: 'Invalid or expired refresh token.!', error: err });
+    res.status(403).json({ message: 'Invalid or expired refresh token' })
   }
-};
+}

@@ -1,3 +1,5 @@
+// token generate wenne methn
+
 import { IUser } from "../models/user.model"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
@@ -19,13 +21,14 @@ export const signAccessToken = (user: IUser): string => {
   )
 }
 
-export const signRefreshToken = (user: IUser) => {
+export const signRefreshToken = (user: IUser): string => {
   return jwt.sign(
     {
-      sub: user.id.toString(),
-      roles: user.roles,
+      sub: user._id.toString()
     },
     JWT_REFRESH_SECRET,
-    { expiresIn: '7d' }
-  );
-};
+    { 
+      expiresIn: '7d' 
+    }
+  )
+}
