@@ -22,10 +22,8 @@ app.use(
   cors({
     origin: ['http://localhost:5173', 'https://smart-blog-fe-nine.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
   })
 )
-app.options("*", cors());
 
 // Mount auth routes, mekath middleware ekak
 app.use('/api/v1/auth', authRoutes)     
